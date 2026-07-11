@@ -24,6 +24,7 @@ import {
 import { format } from "date-fns";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useAuditLog, auditStore } from "@/lib/store/audit-store";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,15 +53,15 @@ import {
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { value: "profile", label: "Profile", icon: User },
-  { value: "company", label: "Company", icon: Building },
-  { value: "notifications", label: "Notifications", icon: Bell },
-  { value: "roles", label: "Roles & Permissions", icon: Users2 },
-  { value: "security", label: "Security", icon: ShieldCheck },
-  { value: "appearance", label: "Appearance", icon: Palette },
-  { value: "integrations", label: "Integrations", icon: Plug },
-  { value: "audit", label: "Activity Log", icon: ScrollText },
-  { value: "api", label: "API & Backup", icon: KeyRound },
+  { value: "profile", label: "Profile", icon: User, adminOnly: false },
+  { value: "company", label: "Company", icon: Building, adminOnly: true },
+  { value: "notifications", label: "Notifications", icon: Bell, adminOnly: false },
+  { value: "roles", label: "Roles & Permissions", icon: Users2, adminOnly: true },
+  { value: "security", label: "Security", icon: ShieldCheck, adminOnly: false },
+  { value: "appearance", label: "Appearance", icon: Palette, adminOnly: false },
+  { value: "integrations", label: "Integrations", icon: Plug, adminOnly: true },
+  { value: "audit", label: "Activity Log", icon: ScrollText, adminOnly: true },
+  { value: "api", label: "API & Backup", icon: KeyRound, adminOnly: true },
 ];
 
 const auditCategoryStyles: Record<string, string> = {
@@ -113,7 +114,10 @@ function SettingsSection({
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { isAdmin, email, role } = useAuth();
   const auditLog = useAuditLog();
+  const visibleTabs = tabs.filter((t) => isAdmin || !t.adminOnly);
+  const profileName = email ? email.split("@")[0].replace(/[._]/g, " ") : "Your Account";
   const [notifPrefs, setNotifPrefs] = React.useState({
     email: true,
     sms: false,
@@ -145,13 +149,17 @@ export default function SettingsPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title="Settings"
-        description="Manage your profile, company, security and integrations."
+        description={
+          isAdmin
+            ? "Manage your profile, company, security and integrations."
+            : "Manage your profile, notifications and preferences."
+        }
         breadcrumbs={[{ label: "Dashboard", href: "/dashboard" }, { label: "Settings" }]}
       />
 
       <Tabs defaultValue="profile" orientation="vertical" className="lg:flex-row">
         <TabsList variant="line" className="h-fit flex-col items-stretch gap-0.5 lg:w-56">
-          {tabs.map((t) => (
+          {visibleTabs.map((t) => (
             <TabsTrigger key={t.value} value={t.value} className="justify-start gap-2 px-2.5 py-1.5">
               <t.icon className="size-4" />
               {t.label}
@@ -168,25 +176,29 @@ export default function SettingsPage() {
             >
               <div className="flex items-center gap-4">
                 <Avatar className="size-16">
-                  <AvatarFallback className="text-lg">SA</AvatarFallback>
+                  <AvatarFallback className="text-lg capitalize">
+                    {profileName.split(" ").map((n) => n[0]).join("").slice(0, 2) || "NA"}
+                  </AvatarFallback>
                 </Avatar>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" onClick={() => toast.info("Upload a new photo")}>Change photo</Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground">Remove</Button>
+                  <Badge variant="ghost" className={cn("border-0 font-medium capitalize", isAdmin ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground")}>
+                    {role === "admin" ? "Administrator" : "Employee"}
+                  </Badge>
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="profile-name">Full Name</Label>
-                  <Input id="profile-name" defaultValue="Sara Ahmed" />
+                  <Input id="profile-name" key={profileName} defaultValue={profileName} className="capitalize" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="profile-role">Job Title</Label>
-                  <Input id="profile-role" defaultValue="Sales Director" />
+                  <Input id="profile-role" defaultValue={isAdmin ? "Administrator" : "Sales Consultant"} />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="profile-email">Email</Label>
-                  <Input id="profile-email" type="email" defaultValue="sara.ahmed@estatia.com" />
+                  <Input id="profile-email" type="email" key={email ?? "e"} defaultValue={email ?? ""} disabled />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="profile-phone">Phone</Label>
