@@ -3,7 +3,7 @@
 // initial client render always share the deterministic seed snapshot — this
 // avoids React hydration mismatches. See [[feedback-crm-shadcn-baseui]].
 
-const PREFIX = "naaz-ai-crm:v2:";
+const PREFIX = "naaz-ai-crm:v3:";
 
 export function loadState<T>(key: string): T | null {
   if (typeof window === "undefined") return null;

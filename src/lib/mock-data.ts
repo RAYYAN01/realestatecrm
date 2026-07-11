@@ -56,44 +56,62 @@ export type Lead = {
 };
 
 const agents = [
-  "Sara Ahmed",
-  "Omar Khalid",
-  "Fatima Noor",
-  "Ali Raza",
-  "Hina Malik",
-  "Bilal Sheikh",
+  "Ravi Kumar",
+  "Priya Nair",
+  "Arjun Reddy",
+  "Sneha Iyer",
+  "Karthik Menon",
+  "Deepika Rao",
+  "Rahul Sharma",
+  "Ananya Pillai",
 ];
 
 const locations = [
-  "DHA Phase 6, Lahore",
-  "Bahria Town, Karachi",
-  "F-10, Islamabad",
-  "Gulberg, Lahore",
-  "Clifton, Karachi",
-  "G-13, Islamabad",
-  "Model Town, Lahore",
-  "PECHS, Karachi",
+  "Whitefield, Bangalore",
+  "Koramangala, Bangalore",
+  "HSR Layout, Bangalore",
+  "Electronic City, Bangalore",
+  "Gachibowli, Hyderabad",
+  "Kondapur, Hyderabad",
+  "Banjara Hills, Hyderabad",
+  "Kukatpally, Hyderabad",
+  "Powai, Mumbai",
+  "Bandra West, Mumbai",
+  "Andheri East, Mumbai",
+  "Baner, Pune",
+  "Hinjewadi, Pune",
+  "Wakad, Pune",
+  "Gurgaon Sector 54, Delhi NCR",
+  "Noida Sector 150, Delhi NCR",
+  "Anna Nagar, Chennai",
+  "OMR, Chennai",
 ];
 
 const sources = [
   "Website",
   "Facebook Ads",
+  "Google Ads",
   "Referral",
   "Walk-in",
-  "Zameen.com",
+  "99acres",
+  "MagicBricks",
+  "Housing.com",
+  "Instagram",
   "Cold Call",
 ];
 
-const propertyTypes = ["Apartment", "House", "Plot", "Commercial", "Villa"];
+const propertyTypes = ["Apartment", "Villa", "Plot", "Penthouse", "Commercial", "Row House", "Studio"];
 
 const firstNames = [
-  "Ahmed", "Ayesha", "Bilal", "Sana", "Usman", "Zara", "Hamza", "Amna",
-  "Faisal", "Mahnoor", "Tariq", "Sadia", "Kashif", "Iqra", "Waqas", "Nida",
-  "Adnan", "Rabia", "Shahzad", "Mehwish",
+  "Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun", "Sai", "Reyansh", "Ayaan",
+  "Krishna", "Ishaan", "Rohan", "Vikram", "Karthik", "Rahul", "Nikhil", "Aniket",
+  "Ananya", "Diya", "Aadhya", "Saanvi", "Aarohi", "Anika", "Navya", "Kavya",
+  "Priya", "Riya", "Neha", "Pooja", "Sneha", "Deepika", "Meera", "Divya",
 ];
 const lastNames = [
-  "Khan", "Malik", "Sheikh", "Butt", "Chaudhry", "Raza", "Qureshi", "Iqbal",
-  "Hussain", "Farooq",
+  "Kumar", "Sharma", "Reddy", "Rao", "Patel", "Nair", "Iyer", "Gupta",
+  "Singh", "Mehta", "Shah", "Verma", "Menon", "Pillai", "Desai", "Joshi",
+  "Naidu", "Chowdary", "Bose", "Kapoor",
 ];
 
 function seededRandom(seed: number) {
@@ -134,18 +152,19 @@ const statuses: LeadStatus[] = [
 const priorities: Priority[] = ["Low", "Medium", "High"];
 
 const amenitiesPool = [
-  "Gym", "Swimming Pool", "24/7 Security", "Backup Power",
-  "Elevator", "Kids Play Area", "Mosque", "Community Center",
+  "Clubhouse", "Swimming Pool", "Gym", "24/7 Security",
+  "Power Backup", "Covered Parking", "Kids Play Area", "Landscaped Garden",
+  "Jogging Track", "Indoor Games", "Rooftop Lounge", "EV Charging",
 ];
 const facings = ["North", "South", "East", "West", "North-East", "South-West"];
 const lostReasons: LostReason[] = [
   "Price Issue", "No Response", "Competitor", "Budget", "Cancelled", "Other",
 ];
 
-export const leads: Lead[] = Array.from({ length: 0 }).map((_, i) => {
+export const leads: Lead[] = Array.from({ length: 100 }).map((_, i) => {
   const name = `${pick(firstNames)} ${pick(lastNames)}`;
-  const budgetMin = (Math.floor(rand() * 40) + 10) * 1_000_000;
-  const budgetMax = budgetMin + (Math.floor(rand() * 20) + 5) * 1_000_000;
+  const budgetMin = (Math.floor(rand() * 45) + 5) * 1_000_000;
+  const budgetMax = budgetMin + (Math.floor(rand() * 25) + 5) * 1_000_000;
   const createdAt = randomDate(120);
   const propertyType = pick(propertyTypes);
   const location = pick(locations);
@@ -176,7 +195,7 @@ export const leads: Lead[] = Array.from({ length: 0 }).map((_, i) => {
     lastContact: randomDate(20),
     bedrooms: 1 + Math.floor(rand() * 5),
     bathrooms: 1 + Math.floor(rand() * 4),
-    areaRequired: `${(Math.floor(rand() * 8) + 3) * 5} Marla`,
+    areaRequired: `${((Math.floor(rand() * 20) + 8) * 100).toLocaleString("en-IN")} sq.ft`,
     possession: rand() > 0.5 ? "Ready to Move" : "Under Construction",
     facing: pick(facings),
     parking: Math.floor(rand() * 3),
@@ -322,43 +341,43 @@ export const recentActivity: ActivityItem[] = [
   {
     id: "act-1",
     type: "deal_won",
-    title: "Deal Won — Ahmed Khan",
-    subtitle: "DHA Phase 6, Lahore · ₹42M",
+    title: "Deal Won — Aarav Reddy",
+    subtitle: "Villa in Whitefield, Bangalore · ₹3.8 Cr",
     timestamp: randomDate(1),
   },
   {
     id: "act-2",
     type: "meeting_scheduled",
-    title: "Meeting Scheduled — Sana Malik",
-    subtitle: "Site visit at Bahria Town, Karachi",
+    title: "Meeting Scheduled — Priya Nair",
+    subtitle: "Site visit at Gachibowli, Hyderabad",
     timestamp: randomDate(1),
   },
   {
     id: "act-3",
     type: "lead_qualified",
-    title: "Lead Qualified — Usman Sheikh",
-    subtitle: "Budget confirmed at ₹35M",
+    title: "Lead Qualified — Vikram Menon",
+    subtitle: "Budget confirmed at ₹1.6 Cr",
     timestamp: randomDate(2),
   },
   {
     id: "act-4",
     type: "property_shared",
-    title: "Property Shared — Ayesha Butt",
-    subtitle: "3-bed apartment, F-10 Islamabad",
+    title: "Property Shared — Ananya Iyer",
+    subtitle: "3 BHK apartment, Powai, Mumbai",
     timestamp: randomDate(2),
   },
   {
     id: "act-5",
     type: "lead_added",
-    title: "New Lead Added — Hamza Iqbal",
-    subtitle: "Sourced via Facebook Ads",
+    title: "New Lead Added — Rohan Gupta",
+    subtitle: "Sourced via 99acres",
     timestamp: randomDate(3),
   },
   {
     id: "act-6",
     type: "deal_lost",
-    title: "Deal Lost — Zara Farooq",
-    subtitle: "Reason: Budget mismatch",
+    title: "Deal Lost — Kavya Shah",
+    subtitle: "Reason: Chose a competitor",
     timestamp: randomDate(4),
   },
 ];
@@ -372,10 +391,11 @@ export type ScheduleItem = {
 };
 
 export const upcomingSchedule: ScheduleItem[] = [
-  { id: "s1", kind: "Meeting", title: "Site visit — Clifton Villa", time: "10:30 AM", with: "Ahmed Khan" },
-  { id: "s2", kind: "Call", title: "Follow-up call", time: "12:00 PM", with: "Sana Malik" },
+  { id: "s1", kind: "Meeting", title: "Site visit — Prestige Villa", time: "10:30 AM", with: "Aarav Reddy" },
+  { id: "s2", kind: "Call", title: "Follow-up call", time: "12:00 PM", with: "Priya Nair" },
   { id: "s3", kind: "Task", title: "Send updated brochure", time: "2:00 PM" },
-  { id: "s4", kind: "Meeting", title: "Negotiation meeting", time: "4:30 PM", with: "Usman Sheikh" },
+  { id: "s4", kind: "Meeting", title: "Negotiation meeting", time: "4:30 PM", with: "Vikram Menon" },
+  { id: "s5", kind: "Call", title: "Payment plan discussion", time: "5:15 PM", with: "Ananya Iyer" },
 ];
 
 export type NotificationItem = {
@@ -390,14 +410,14 @@ export const notifications: NotificationItem[] = [
   {
     id: "n1",
     title: "New lead assigned",
-    description: "Hamza Iqbal was assigned to you by Omar Khalid.",
+    description: "Rohan Gupta was assigned to you by Ravi Kumar.",
     timestamp: randomDate(0),
     read: false,
   },
   {
     id: "n2",
     title: "Meeting reminder",
-    description: "Site visit with Ahmed Khan starts in 30 minutes.",
+    description: "Site visit with Aarav Reddy starts in 30 minutes.",
     timestamp: randomDate(0),
     read: false,
   },
@@ -411,7 +431,7 @@ export const notifications: NotificationItem[] = [
   {
     id: "n4",
     title: "Deal won",
-    description: "Congrats! The DHA Phase 6 deal closed at ₹42M.",
+    description: "Congrats! The Whitefield villa deal closed at ₹3.8 Cr.",
     timestamp: randomDate(1),
     read: true,
   },
@@ -463,15 +483,15 @@ const monthLabels = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
-export const monthlyLeadsTrend = monthLabels.map((month) => ({
+export const monthlyLeadsTrend = monthLabels.map((month, i) => ({
   month,
-  leads: 0,
+  leads: Math.round(28 + i * 4.5 + Math.sin(i / 2) * 8),
 }));
 
-export const revenueForecastTrend = monthLabels.map((month) => ({
+export const revenueForecastTrend = monthLabels.map((month, i) => ({
   month,
-  actual: 0 as number | null,
-  forecast: 0,
+  actual: (i < 8 ? Math.round(18 + i * 3.2 + Math.cos(i) * 3) : null) as number | null,
+  forecast: Math.round(18 + i * 3.6 + Math.sin(i / 3) * 4),
 }));
 
 export const conversionRate = Math.round(
@@ -502,7 +522,16 @@ export type Prospect = {
   createdAt: string;
 };
 
-export const prospects: Prospect[] = Array.from({ length: 0 }).map((_, i) => {
+const prospectNotes = [
+  "Awaiting budget confirmation before qualifying.",
+  "Comparing 2–3 projects; wants a weekend site visit.",
+  "Relocating from abroad in 3 months, actively looking.",
+  "Investor — interested in pre-launch pricing.",
+  "First-time buyer, needs home-loan guidance.",
+  "Prefers ready-to-move; not keen on under-construction.",
+];
+
+export const prospects: Prospect[] = Array.from({ length: 42 }).map((_, i) => {
   const name = `${pick(firstNames)} ${pick(lastNames)}`;
   return {
     id: `PR-${String(2000 + i)}`,
@@ -512,7 +541,7 @@ export const prospects: Prospect[] = Array.from({ length: 0 }).map((_, i) => {
     location: pick(locations),
     budget: (Math.floor(rand() * 40) + 10) * 1_000_000,
     interestLevel: pick(["Low", "Medium", "High"] as const),
-    notes: "Awaiting budget confirmation before qualifying.",
+    notes: pick(prospectNotes),
     createdAt: randomDate(60),
   };
 });
@@ -533,7 +562,7 @@ export type Client = {
   supportRequests: number;
 };
 
-export const clients: Client[] = Array.from({ length: 0 }).map((_, i) => {
+export const clients: Client[] = Array.from({ length: 34 }).map((_, i) => {
   const name = `${pick(firstNames)} ${pick(lastNames)}`;
   return {
     id: `CL-${String(3000 + i)}`,
@@ -577,13 +606,21 @@ const taskTitles = [
   "Coordinate with legal team",
 ];
 
-export const tasks: Task[] = Array.from({ length: 0 }).map((_, i) => {
-  const lead = pick(leads);
+const taskDescriptions = [
+  "Prioritise this follow-up — the client is actively comparing options.",
+  "Client requested this before the next site visit.",
+  "Time-sensitive: needed to keep the deal moving this week.",
+  "Coordinate with the team and update the lead timeline once done.",
+  "Confirm details over call, then share supporting documents.",
+];
+
+export const tasks: Task[] = Array.from({ length: 64 }).map((_, i) => {
+  const lead = leads[i % leads.length];
   return {
     id: `TSK-${String(4000 + i)}`,
     title: pick(taskTitles),
-    description: "Auto-generated task tied to an active lead follow-up.",
-    assignedTo: pick(agents),
+    description: pick(taskDescriptions),
+    assignedTo: lead.agent,
     leadId: lead.id,
     relatedLead: lead.name,
     priority: pick(priorities),
@@ -617,19 +654,20 @@ const meetingTitles = [
   "Follow-up consultation",
 ];
 
-export const meetings: Meeting[] = Array.from({ length: 0 }).map((_, i) => {
-  const lead = pick(leads);
+export const meetings: Meeting[] = Array.from({ length: 46 }).map((_, i) => {
+  const lead = leads[(i * 2) % leads.length];
+  const hour = 9 + Math.floor(rand() * 9);
+  const period = hour >= 12 ? "PM" : "AM";
+  const h12 = hour > 12 ? hour - 12 : hour;
   return {
     id: `MTG-${String(5000 + i)}`,
-    title: `${pick(meetingTitles)} — ${pick(locations)}`,
+    title: `${pick(meetingTitles)} — ${lead.propertyType} in ${lead.location.split(",")[0]}`,
     leadId: lead.id,
     leadName: lead.name,
     date: randomDate(-20),
-    time: `${9 + Math.floor(rand() * 8)}:${rand() > 0.5 ? "30" : "00"} ${
-      rand() > 0.5 ? "AM" : "PM"
-    }`,
-    location: pick(locations),
-    participants: [pick(agents), pick(agents)],
+    time: `${h12}:${rand() > 0.5 ? "30" : "00"} ${period}`,
+    location: lead.location,
+    participants: Array.from(new Set([lead.agent, pick(agents)])),
     status: pick(["Scheduled", "Completed", "Cancelled"] as const),
   };
 });
@@ -650,8 +688,17 @@ export type CallLog = {
   timestamp: string;
 };
 
-export const calls: CallLog[] = Array.from({ length: 0 }).map((_, i) => {
-  const lead = pick(leads);
+const callSummaries = [
+  "Discussed budget expectations and shortlisted 3 properties.",
+  "Explained the payment plan and home-loan tie-ups.",
+  "Confirmed the site visit slot for this weekend.",
+  "Answered questions on possession timeline and amenities.",
+  "Negotiated final pricing; awaiting client decision.",
+  "Shared brochure and floor plans over WhatsApp after the call.",
+];
+
+export const calls: CallLog[] = Array.from({ length: 82 }).map((_, i) => {
+  const lead = leads[(i * 3) % leads.length];
   return {
     id: `CALL-${String(6000 + i)}`,
     leadId: lead.id,
@@ -660,8 +707,8 @@ export const calls: CallLog[] = Array.from({ length: 0 }).map((_, i) => {
     duration: `${Math.floor(rand() * 12) + 1}:${String(
       Math.floor(rand() * 59)
     ).padStart(2, "0")}`,
-    agent: pick(agents),
-    summary: "Discussed budget expectations and shortlisted properties.",
+    agent: lead.agent,
+    summary: pick(callSummaries),
     followUp: rand() > 0.5,
     timestamp: randomDate(30),
   };
@@ -684,12 +731,14 @@ export type EmailThread = {
 };
 
 const emailSubjects = [
-  "Re: Property shortlist for DHA Phase 6",
+  "Re: Property shortlist for Whitefield",
   "Payment plan options attached",
-  "Site visit confirmation",
-  "Updated price sheet — Bahria Town",
-  "Contract draft for review",
+  "Site visit confirmation — this weekend",
+  "Updated price sheet — Gachibowli",
+  "Contract draft for your review",
   "Thank you for visiting our office",
+  "3 BHK options within your budget",
+  "Home-loan pre-approval — next steps",
 ];
 
 // Weighted, deterministic folder pattern (rather than a pure random pick) so every
@@ -698,7 +747,7 @@ const emailFolderPattern: EmailThread["folder"][] = [
   "Inbox", "Inbox", "Sent", "Inbox", "Drafts", "Inbox",
 ];
 
-export const emailThreads: EmailThread[] = Array.from({ length: 0 }).map(
+export const emailThreads: EmailThread[] = Array.from({ length: 24 }).map(
   (_, i) => ({
     id: `EM-${String(7000 + i)}`,
     subject: pick(emailSubjects),
@@ -734,7 +783,28 @@ export type Resource = {
   updatedAt: string;
 };
 
-export const resources: Resource[] = [];
+const resourceTitles: Record<Resource["category"], string[]> = {
+  "Sales Scripts": ["Cold call opening script", "Objection handling guide", "Site-visit closing script"],
+  "Property Documents": ["Title deed checklist", "RERA registration guide", "Encumbrance certificate FAQ"],
+  "Company Policies": ["Code of conduct", "Leave policy", "Brokerage & incentive policy"],
+  "Training Material": ["New consultant onboarding handbook", "Negotiation tactics 101", "Home-loan basics for agents"],
+  FAQs: ["Buyer FAQs", "NRI investment FAQs", "Home-loan FAQs"],
+  "Price Sheets": ["Whitefield project price sheet", "Gachibowli price sheet", "Powai project price sheet"],
+  Contracts: ["Sale agreement template", "Rental agreement template", "Booking form template"],
+  Checklists: ["Site visit checklist", "Closing checklist", "Document verification checklist"],
+};
+
+export const resources: Resource[] = Object.entries(resourceTitles).flatMap(
+  ([category, titles]) =>
+    titles.map((title, i) => ({
+      id: `RES-${category.slice(0, 3).toUpperCase()}-${i}`,
+      title,
+      category: category as Resource["category"],
+      type: pick(["PDF", "Video", "Doc"] as const),
+      tags: [category.split(" ")[0], "2026"],
+      updatedAt: randomDate(90),
+    }))
+);
 
 // ---------------------------------------------------------------------------
 // Internal Chat
@@ -759,4 +829,57 @@ export type ChatConversation = {
   messages: ChatMessage[];
 };
 
-export const chatConversations: ChatConversation[] = [];
+export const chatConversations: ChatConversation[] = [
+  {
+    id: "chat-1",
+    name: "Ravi Kumar",
+    type: "direct",
+    lastMessage: "Sent the updated brochure to the client.",
+    lastMessageAt: randomDate(0),
+    unread: 2,
+    online: true,
+    messages: [
+      { id: "m1", author: "Ravi Kumar", content: "Hey, did you get a chance to review the Whitefield listing?", timestamp: randomDate(0) },
+      { id: "m2", author: "You", content: "Yes, looks great. Let's share it with Aarav Reddy.", timestamp: randomDate(0), self: true },
+      { id: "m3", author: "Ravi Kumar", content: "Sent the updated brochure to the client.", timestamp: randomDate(0) },
+    ],
+  },
+  {
+    id: "chat-2",
+    name: "Sales Team",
+    type: "group",
+    lastMessage: "Priya Nair: Closed the Gachibowli deal today! 🎉",
+    lastMessageAt: randomDate(0),
+    unread: 5,
+    messages: [
+      { id: "m1", author: "Priya Nair", content: "Closed the Gachibowli deal today! 🎉", timestamp: randomDate(0) },
+      { id: "m2", author: "Karthik Menon", content: "Amazing work team!", timestamp: randomDate(0) },
+      { id: "m3", author: "You", content: "Congrats Priya!", timestamp: randomDate(0), self: true },
+    ],
+  },
+  {
+    id: "chat-3",
+    name: "Arjun Reddy",
+    type: "direct",
+    lastMessage: "Can you cover my 4 PM site visit?",
+    lastMessageAt: randomDate(1),
+    unread: 0,
+    online: false,
+    messages: [
+      { id: "m1", author: "Arjun Reddy", content: "Stuck in traffic — can you cover my 4 PM site visit?", timestamp: randomDate(1) },
+      { id: "m2", author: "You", content: "Sure, I've got it. Send me the client details.", timestamp: randomDate(1), self: true },
+    ],
+  },
+  {
+    id: "chat-4",
+    name: "Operations",
+    type: "group",
+    lastMessage: "Deepika Rao: Price sheets for Q3 are uploaded to Resources.",
+    lastMessageAt: randomDate(2),
+    unread: 0,
+    messages: [
+      { id: "m1", author: "Deepika Rao", content: "Price sheets for Q3 are uploaded to Resources.", timestamp: randomDate(2) },
+      { id: "m2", author: "Rahul Sharma", content: "Thanks, will share with my leads.", timestamp: randomDate(2) },
+    ],
+  },
+];
