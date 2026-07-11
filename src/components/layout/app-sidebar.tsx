@@ -15,6 +15,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { primaryNav, secondaryNav } from "@/lib/nav-config";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { cn } from "@/lib/utils";
 import {
   Avatar,
@@ -24,6 +25,9 @@ import {
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { email, role } = useAuth();
+  const displayName = email ? email.split("@")[0].replace(/[._]/g, " ") : "Your Account";
+  const initials = displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -105,15 +109,15 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" className="mt-1">
               <Avatar className="size-6 rounded-md">
-                <AvatarImage src="" alt="Sara Ahmed" />
-                <AvatarFallback className="rounded-md text-[11px]">SA</AvatarFallback>
+                <AvatarImage src="" alt={displayName} />
+                <AvatarFallback className="rounded-md text-[11px] capitalize">{initials || "NA"}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="text-xs font-medium text-sidebar-foreground">
-                  Sara Ahmed
+                <span className="truncate text-xs font-medium text-sidebar-foreground capitalize">
+                  {displayName}
                 </span>
-                <span className="text-[11px] text-sidebar-foreground/60">
-                  Sales Director
+                <span className="text-[11px] text-sidebar-foreground/60 capitalize">
+                  {role === "admin" ? "Administrator" : "Employee"}
                 </span>
               </div>
             </SidebarMenuButton>

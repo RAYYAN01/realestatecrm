@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatCurrencyPKR, type LeadStatus } from "@/lib/mock-data";
 import { useLeads, leadsStore } from "@/lib/store/leads-store";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { cn } from "@/lib/utils";
 
 const boardStages: LeadStatus[] = [
@@ -29,6 +30,7 @@ const stageAccent: Record<LeadStatus, string> = {
 
 export default function PipelinePage() {
   const { leads } = useLeads();
+  const { isAdmin } = useAuth();
   const [search, setSearch] = React.useState("");
   const [draggingId, setDraggingId] = React.useState<string | null>(null);
   const [dragOverStage, setDragOverStage] = React.useState<LeadStatus | null>(null);
@@ -132,9 +134,11 @@ export default function PipelinePage() {
                     </span>
                   </div>
                 </div>
-                <p className="px-2 text-xs text-muted-foreground">
-                  {formatCurrencyPKR(totalValue)}
-                </p>
+                {isAdmin && (
+                  <p className="px-2 text-xs text-muted-foreground">
+                    {formatCurrencyPKR(totalValue)}
+                  </p>
+                )}
 
                 <div className="flex min-h-24 flex-col gap-2.5">
                   {items.length === 0 ? (

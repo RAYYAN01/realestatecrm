@@ -73,6 +73,7 @@ import {
 } from "@/lib/mock-data";
 import { useLead, leadsStore } from "@/lib/store/leads-store";
 import { useLeadActivities, activitiesStore } from "@/lib/store/activities-store";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { TaskFormDialog } from "@/components/tasks/task-form-dialog";
 import { MeetingFormDialog } from "@/components/meetings/meeting-form-dialog";
 import { CallFormDialog } from "@/components/calls/call-form-dialog";
@@ -113,6 +114,7 @@ export default function LeadDetailPage() {
   const router = useRouter();
   const { lead, timeline, notes, documents } = useLead(params.id);
   const { tasks, meetings, calls } = useLeadActivities(params.id);
+  const { isAdmin } = useAuth();
   const [editOpen, setEditOpen] = React.useState(false);
   const [noteDraft, setNoteDraft] = React.useState("");
   const [taskOpen, setTaskOpen] = React.useState(false);
@@ -333,8 +335,8 @@ export default function LeadDetailPage() {
                   <span className="text-sm font-semibold text-foreground">Deal Won</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <div><p className="text-xs text-muted-foreground">Revenue</p><p className="text-sm font-medium text-foreground">{formatCurrencyPKR(lead.wonDetails.revenue)}</p></div>
-                  <div><p className="text-xs text-muted-foreground">Commission</p><p className="text-sm font-medium text-foreground">{formatCurrencyPKR(lead.wonDetails.commission)}</p></div>
+                  {isAdmin && <div><p className="text-xs text-muted-foreground">Revenue</p><p className="text-sm font-medium text-foreground">{formatCurrencyPKR(lead.wonDetails.revenue)}</p></div>}
+                  {isAdmin && <div><p className="text-xs text-muted-foreground">Commission</p><p className="text-sm font-medium text-foreground">{formatCurrencyPKR(lead.wonDetails.commission)}</p></div>}
                   <div><p className="text-xs text-muted-foreground">Closed</p><p className="text-sm font-medium text-foreground">{format(new Date(lead.wonDetails.closingDate), "dd MMM yyyy")}</p></div>
                   <div><p className="text-xs text-muted-foreground">Property</p><p className="text-sm font-medium text-foreground">{lead.wonDetails.propertyPurchased}</p></div>
                 </div>

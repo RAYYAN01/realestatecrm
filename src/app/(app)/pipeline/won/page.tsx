@@ -20,9 +20,11 @@ import {
 } from "@/components/ui/table";
 import { formatCurrencyPKR } from "@/lib/mock-data";
 import { useLeads } from "@/lib/store/leads-store";
+import { useAuth } from "@/lib/auth/auth-provider";
 
 export default function WonLeadsPage() {
   const { leads } = useLeads();
+  const { isAdmin } = useAuth();
   const [search, setSearch] = React.useState("");
 
   const won = React.useMemo(
@@ -55,9 +57,13 @@ export default function WonLeadsPage() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Deals Won" value={String(won.length)} icon={Trophy} tone="success" />
-        <StatCard label="Total Revenue" value={formatCurrencyPKR(totalRevenue)} icon={Wallet} tone="success" />
-        <StatCard label="Total Commission" value={formatCurrencyPKR(totalCommission)} icon={Percent} tone="primary" />
-        <StatCard label="Avg Deal Size" value={formatCurrencyPKR(avgDeal)} icon={TrendingUp} />
+        {isAdmin && (
+          <>
+            <StatCard label="Total Revenue" value={formatCurrencyPKR(totalRevenue)} icon={Wallet} tone="success" />
+            <StatCard label="Total Commission" value={formatCurrencyPKR(totalCommission)} icon={Percent} tone="primary" />
+            <StatCard label="Avg Deal Size" value={formatCurrencyPKR(avgDeal)} icon={TrendingUp} />
+          </>
+        )}
       </div>
 
       <div className="relative w-full max-w-xs">
@@ -74,8 +80,8 @@ export default function WonLeadsPage() {
               <TableRow>
                 <TableHead className="pl-4">Client</TableHead>
                 <TableHead>Property Purchased</TableHead>
-                <TableHead>Revenue</TableHead>
-                <TableHead>Commission</TableHead>
+                {isAdmin && <TableHead>Revenue</TableHead>}
+                {isAdmin && <TableHead>Commission</TableHead>}
                 <TableHead>Closing Date</TableHead>
                 <TableHead className="pr-4">Sales Agent</TableHead>
               </TableRow>
@@ -90,8 +96,8 @@ export default function WonLeadsPage() {
                     <p className="text-xs text-muted-foreground">{lead.phone}</p>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{lead.wonDetails?.propertyPurchased}</TableCell>
-                  <TableCell className="font-medium text-success">{formatCurrencyPKR(lead.wonDetails!.revenue)}</TableCell>
-                  <TableCell className="text-muted-foreground">{formatCurrencyPKR(lead.wonDetails!.commission)}</TableCell>
+                  {isAdmin && <TableCell className="font-medium text-success">{formatCurrencyPKR(lead.wonDetails!.revenue)}</TableCell>}
+                  {isAdmin && <TableCell className="text-muted-foreground">{formatCurrencyPKR(lead.wonDetails!.commission)}</TableCell>}
                   <TableCell className="text-muted-foreground">
                     {format(new Date(lead.wonDetails!.closingDate), "dd MMM yyyy")}
                   </TableCell>

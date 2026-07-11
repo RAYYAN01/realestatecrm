@@ -51,6 +51,7 @@ import {
   PipelineFunnelChart,
   ConversionMeter,
 } from "@/components/dashboard/charts";
+import { getServerRole } from "@/lib/auth/server";
 
 function countStatus(status: string) {
   return leads.filter((l) => l.status === status).length;
@@ -71,7 +72,8 @@ const scheduleIcon: Record<string, React.ElementType> = {
   Task: ListChecks,
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { isAdmin } = await getServerRole();
   const revenuePotential = leads
     .filter((l) => l.status !== "Lost")
     .reduce((sum, l) => sum + l.budgetMax, 0);
@@ -110,7 +112,9 @@ export default function DashboardPage() {
         <StatCard label="Won" value={String(countStatus("Won"))} icon={Trophy} tone="success" trend={{ value: "12%", direction: "up" }} />
         <StatCard label="Lost" value={String(countStatus("Lost"))} icon={XCircle} tone="destructive" trend={{ value: "2%", direction: "down", positive: false }} />
         <StatCard label="Active Clients" value={String(clients.length)} icon={Building2} tone="primary" />
-        <StatCard label="Revenue Potential" value={formatCurrencyPKR(revenuePotential)} icon={Wallet} tone="success" />
+        {isAdmin && (
+          <StatCard label="Revenue Potential" value={formatCurrencyPKR(revenuePotential)} icon={Wallet} tone="success" />
+        )}
         <StatCard label="Conversion Rate" value={`${conversionRate}%`} icon={Percent} />
         <StatCard label="Pending Tasks" value={String(pendingTasks)} icon={ListChecks} tone="warning" />
       </div>
@@ -170,16 +174,18 @@ export default function DashboardPage() {
 
       {/* Charts row 3 */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Revenue Forecast</CardTitle>
-            <CardDescription>Actual vs. projected revenue, in ₹ millions.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <RevenueForecastChart />
-          </CardContent>
-        </Card>
-        <Card>
+        {isAdmin && (
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Revenue Forecast</CardTitle>
+              <CardDescription>Actual vs. projected revenue, in ₹ millions.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RevenueForecastChart />
+            </CardContent>
+          </Card>
+        )}
+        <Card className={isAdmin ? undefined : "lg:col-span-3"}>
           <CardHeader>
             <CardTitle>Property Categories</CardTitle>
             <CardDescription>Lead demand by property type.</CardDescription>

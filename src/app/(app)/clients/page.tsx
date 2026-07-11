@@ -42,10 +42,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { clients as initialClients, formatCurrencyPKR, type Client } from "@/lib/mock-data";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { format } from "date-fns";
 
 export default function ClientsPage() {
   const [clients] = React.useState<Client[]>(initialClients);
+  const { isAdmin } = useAuth();
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
   const [page, setPage] = React.useState(1);
@@ -104,7 +106,7 @@ export default function ClientsPage() {
                 <TableRow>
                   <TableHead className="pl-4">Client</TableHead>
                   <TableHead>Property Purchased</TableHead>
-                  <TableHead>Purchase Value</TableHead>
+                  {isAdmin && <TableHead>Purchase Value</TableHead>}
                   <TableHead>Closing Date</TableHead>
                   <TableHead>Agent</TableHead>
                   <TableHead className="pr-4">Support</TableHead>
@@ -131,7 +133,7 @@ export default function ClientsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{c.propertyPurchased}</TableCell>
-                    <TableCell className="text-muted-foreground">{formatCurrencyPKR(c.purchaseValue)}</TableCell>
+                    {isAdmin && <TableCell className="text-muted-foreground">{formatCurrencyPKR(c.purchaseValue)}</TableCell>}
                     <TableCell className="text-muted-foreground">
                       {format(new Date(c.closingDate), "dd MMM yyyy")}
                     </TableCell>
@@ -196,12 +198,14 @@ export default function ClientsPage() {
                       <p className="mt-1 text-sm font-medium text-foreground">{activeClient.propertyPurchased}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded-lg border border-border p-3">
-                        <p className="text-xs font-medium text-muted-foreground">Purchase Value</p>
-                        <p className="mt-1 text-sm font-medium text-foreground">
-                          {formatCurrencyPKR(activeClient.purchaseValue)}
-                        </p>
-                      </div>
+                      {isAdmin && (
+                        <div className="rounded-lg border border-border p-3">
+                          <p className="text-xs font-medium text-muted-foreground">Purchase Value</p>
+                          <p className="mt-1 text-sm font-medium text-foreground">
+                            {formatCurrencyPKR(activeClient.purchaseValue)}
+                          </p>
+                        </div>
+                      )}
                       <div className="rounded-lg border border-border p-3">
                         <p className="text-xs font-medium text-muted-foreground">Closing Date</p>
                         <p className="mt-1 text-sm font-medium text-foreground">
