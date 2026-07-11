@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_CONFIGURED } from "@/lib/supabase/config";
 
 const PUBLIC_PATHS = ["/login", "/auth"];
 
@@ -8,15 +9,12 @@ const PUBLIC_PATHS = ["/login", "/auth"];
  * unauthenticated users are redirected to /login. Invoked from `proxy.ts`.
  */
 export async function updateSession(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
   // If Supabase isn't configured, don't gate anything (app runs on demo data).
-  if (!url || !key) return NextResponse.next({ request });
+  if (!SUPABASE_CONFIGURED) return NextResponse.next({ request });
 
   let response = NextResponse.next({ request });
 
-  const supabase = createServerClient(url, key, {
+  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

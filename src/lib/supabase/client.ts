@@ -1,20 +1,12 @@
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
+import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_CONFIGURED } from "./config";
 
-/**
- * Browser Supabase client. Reads public env vars that are safe to expose:
- *   NEXT_PUBLIC_SUPABASE_URL
- *   NEXT_PUBLIC_SUPABASE_ANON_KEY
- */
+/** Browser Supabase client. */
 export function createClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  return createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-/** True when the app has been configured with Supabase credentials. */
-export const isSupabaseConfigured =
-  !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
-  !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+/** True when the app has Supabase credentials (always true — see config.ts). */
+export const isSupabaseConfigured = SUPABASE_CONFIGURED;

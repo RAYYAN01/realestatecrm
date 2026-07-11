@@ -11,7 +11,10 @@ export function roleForEmail(email: string | null | undefined): Role {
   if (!email) return "employee";
   const e = email.trim().toLowerCase();
   const local = e.split("@")[0] ?? "";
-  const allow = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+  const allow = (
+    process.env.NEXT_PUBLIC_ADMIN_EMAILS ??
+    "mohammedrayan@naazailabs.com,admin@naazailabs.com"
+  )
     .split(",")
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
