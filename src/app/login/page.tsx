@@ -30,12 +30,26 @@ export default function LoginPage() {
     const supabase = createClient();
 
     if (mode === "signup") {
+      // Admin-controlled access: only pre-invited emails may register.
+      const { data: allowed, error: rpcErr } = await supabase.rpc(
+        "is_email_allowed",
+        { p_email: email }
+      );
+      if (rpcErr) {
+        setLoading(false);
+        return setError("Couldn't verify your invite right now. Please try again.");
+      }
+      if (!allowed) {
+        setLoading(false);
+        return setError("This email hasn't been invited. Ask your admin for access.");
+      }
       const { error } = await supabase.auth.signUp({ email, password });
       setLoading(false);
       if (error) return setError(error.message);
       // If email confirmation is on, there's no session yet.
       const { data } = await supabase.auth.getSession();
       if (data.session) {
+        await supabase.rpc("mark_self_active").then(undefined, () => {});
         router.replace("/dashboard");
         router.refresh();
       } else {
@@ -44,15 +58,19 @@ export default function LoginPage() {
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setLoading(false);
+        return setError(error.message);
+      }
+      await supabase.rpc("mark_self_active").then(undefined, () => {});
       setLoading(false);
-      if (error) return setError(error.message);
       router.replace("/dashboard");
       router.refresh();
     }
   }
 
   return (
-    <div className="app-ambient flex min-h-svh items-center justify-center p-6">
+    <div className="login-shell flex min-h-svh items-center justify-center p-6">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
           <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
@@ -61,7 +79,7 @@ export default function LoginPage() {
           <div>
             <h1 className="text-xl font-semibold tracking-tight text-foreground">Naaz AI CRM</h1>
             <p className="text-sm text-muted-foreground">
-              {mode === "login" ? "Sign in to your workspace" : "Create your workspace account"}
+              {mode === "login" ? "Sign in to your workspace" : "Sign up with the email your admin invited"}
             </p>
           </div>
         </div>

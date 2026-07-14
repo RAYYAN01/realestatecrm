@@ -188,6 +188,19 @@
     radial-gradient(44rem 42rem at 82% 112%, oklch(0.56 0.15 196 / 0.24), transparent 58%);
 }
 
+/* Login background: soft ambient in light mode, but FULL DARK (no colour /
+   gradients) in dark mode — a flat, single-tone backdrop. */
+.login-shell {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(46rem 38rem at 8% -6%, oklch(0.66 0.15 264 / 0.18), transparent 58%),
+    radial-gradient(44rem 42rem at 82% 112%, oklch(0.72 0.13 196 / 0.14), transparent 58%);
+}
+.dark .login-shell {
+  background-color: var(--background);
+  background-image: none;
+}
+
 /* Frosted-glass surface: translucent fill, sheen gradient, strong blur, edge glow. */
 @utility glass {
   background-image: linear-gradient(

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { loadState, saveState } from "@/lib/store/persist";
+import { hydrateRemote, pushRemote } from "@/lib/store/remote";
 
 export type AuditEntry = {
   id: string;
@@ -21,6 +22,7 @@ const listeners = new Set<() => void>();
 function emit() {
   state = [...state];
   saveState(STORAGE_KEY, state);
+  pushRemote(STORAGE_KEY, state);
   listeners.forEach((l) => l());
 }
 
@@ -32,6 +34,16 @@ function subscribe(listener: () => void) {
       state = stored;
       queueMicrotask(() => listeners.forEach((l) => l()));
     }
+    hydrateRemote<AuditEntry[]>(
+      STORAGE_KEY,
+      (remote) => {
+        if (!Array.isArray(remote)) return;
+        state = remote;
+        saveState(STORAGE_KEY, state);
+        listeners.forEach((l) => l());
+      },
+      () => state
+    );
   }
   listeners.add(listener);
   return () => listeners.delete(listener);

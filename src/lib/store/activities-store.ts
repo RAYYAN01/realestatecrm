@@ -10,6 +10,7 @@ import {
   type CallLog,
 } from "@/lib/mock-data";
 import { loadState, saveState } from "@/lib/store/persist";
+import { hydrateRemote, pushRemote } from "@/lib/store/remote";
 
 type ActivitiesState = {
   tasks: Task[];
@@ -31,6 +32,7 @@ const listeners = new Set<() => void>();
 function emit() {
   state = { ...state };
   saveState(STORAGE_KEY, state);
+  pushRemote(STORAGE_KEY, state);
   listeners.forEach((l) => l());
 }
 
@@ -42,6 +44,16 @@ function subscribe(listener: () => void) {
       state = stored;
       queueMicrotask(() => listeners.forEach((l) => l()));
     }
+    hydrateRemote<ActivitiesState>(
+      STORAGE_KEY,
+      (remote) => {
+        if (!remote?.tasks) return;
+        state = remote;
+        saveState(STORAGE_KEY, state);
+        listeners.forEach((l) => l());
+      },
+      () => state
+    );
   }
   listeners.add(listener);
   return () => listeners.delete(listener);

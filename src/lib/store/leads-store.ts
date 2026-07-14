@@ -16,6 +16,7 @@ import {
   type LostReason,
 } from "@/lib/mock-data";
 import { loadState, saveState } from "@/lib/store/persist";
+import { hydrateRemote, pushRemote } from "@/lib/store/remote";
 import { auditStore } from "@/lib/store/audit-store";
 
 type LeadsState = {
@@ -46,6 +47,7 @@ const listeners = new Set<() => void>();
 function emit() {
   state = { ...state };
   saveState(STORAGE_KEY, state);
+  pushRemote(STORAGE_KEY, state);
   listeners.forEach((l) => l());
 }
 
@@ -57,6 +59,16 @@ function subscribe(listener: () => void) {
       state = stored;
       queueMicrotask(() => listeners.forEach((l) => l()));
     }
+    hydrateRemote<LeadsState>(
+      STORAGE_KEY,
+      (remote) => {
+        if (!remote?.leads?.length) return;
+        state = remote;
+        saveState(STORAGE_KEY, state);
+        listeners.forEach((l) => l());
+      },
+      () => state
+    );
   }
   listeners.add(listener);
   return () => listeners.delete(listener);

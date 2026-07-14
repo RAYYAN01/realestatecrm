@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { CalendarDays, Sparkles } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -32,6 +33,7 @@ export function Topbar() {
                 variant="ghost"
                 size="icon"
                 className="size-9 text-muted-foreground"
+                render={<Link href="/calendar" />}
               >
                 <CalendarDays className="size-4.5" />
                 <span className="sr-only">Calendar</span>

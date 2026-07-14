@@ -28,6 +28,7 @@ export function MeetingFormDialog({
   onSubmit,
   defaultLeadId,
   defaultLeadName,
+  defaultDate,
   lockLead = false,
 }: {
   open: boolean;
@@ -35,6 +36,8 @@ export function MeetingFormDialog({
   onSubmit: (values: MeetingFormValues) => void;
   defaultLeadId?: string;
   defaultLeadName?: string;
+  /** Pre-fill the date field (yyyy-MM-dd), e.g. when opened from the calendar. */
+  defaultDate?: string;
   lockLead?: boolean;
 }) {
   const [title, setTitle] = React.useState("");
@@ -52,7 +55,7 @@ export function MeetingFormDialog({
     if (open) {
       setTitle(""); setLeadId(defaultLeadId); setLeadName(defaultLeadName ?? "");
       setLocation(locations[0]); setLink(""); setTime("10:00"); setError("");
-      setDate(new Date().toISOString().slice(0, 10));
+      setDate(defaultDate ?? new Date().toISOString().slice(0, 10));
     }
   }
 

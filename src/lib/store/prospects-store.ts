@@ -4,6 +4,7 @@ import * as React from "react";
 import { prospects as seedProspects, type Prospect, type Lead } from "@/lib/mock-data";
 import { leadsStore } from "@/lib/store/leads-store";
 import { loadState, saveState } from "@/lib/store/persist";
+import { hydrateRemote, pushRemote } from "@/lib/store/remote";
 import { auditStore } from "@/lib/store/audit-store";
 
 const STORAGE_KEY = "prospects";
@@ -15,6 +16,7 @@ const listeners = new Set<() => void>();
 function emit() {
   state = [...state];
   saveState(STORAGE_KEY, state);
+  pushRemote(STORAGE_KEY, state);
   listeners.forEach((l) => l());
 }
 
@@ -26,6 +28,16 @@ function subscribe(listener: () => void) {
       state = stored;
       queueMicrotask(() => listeners.forEach((l) => l()));
     }
+    hydrateRemote<Prospect[]>(
+      STORAGE_KEY,
+      (remote) => {
+        if (!Array.isArray(remote)) return;
+        state = remote;
+        saveState(STORAGE_KEY, state);
+        listeners.forEach((l) => l());
+      },
+      () => state
+    );
   }
   listeners.add(listener);
   return () => listeners.delete(listener);

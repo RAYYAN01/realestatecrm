@@ -170,6 +170,27 @@ create index if not exists idx_timeline_lead     on public.lead_timeline (lead_i
 create index if not exists idx_documents_lead    on public.lead_documents (lead_id);
 
 -- ============================================================================
+-- Per-user application state (flexible key/value snapshots).
+-- Each store (leads, activities, prospects, audit-log) persists its whole
+-- JSON snapshot under one key per user. This lets the CRM sync across devices
+-- while the client keeps working offline from localStorage. RLS-protected.
+-- ============================================================================
+create table if not exists public.crm_state (
+  user_id    uuid not null references auth.users (id) on delete cascade,
+  key        text not null,
+  value      jsonb not null,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, key)
+);
+
+alter table public.crm_state enable row level security;
+drop policy if exists "owner_all" on public.crm_state;
+create policy "owner_all" on public.crm_state
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- ============================================================================
 -- Row-Level Security: users can only touch their own rows.
 -- ============================================================================
 do $$
@@ -190,3 +211,80 @@ begin
     $f$, t);
   end loop;
 end $$;
+
+-- ============================================================================
+-- Team access control ("admin world"): admin-managed invite allowlist.
+-- ONLY emails present here may sign up. Admins manage the list from the CRM.
+-- Admins themselves are seeded below (keep in sync with NEXT_PUBLIC_ADMIN_EMAILS)
+-- so admin creation stays a deploy-time action, not a runtime one.
+-- ============================================================================
+create table if not exists public.app_members (
+  id         uuid primary key default gen_random_uuid(),
+  email      text not null unique,
+  full_name  text,
+  role       text not null default 'employee',  -- 'admin' | 'employee'
+  status     text not null default 'invited',   -- 'invited' | 'active' | 'disabled'
+  invited_by text,
+  created_at timestamptz not null default now()
+);
+
+-- SECURITY DEFINER helpers run as the owner, so they bypass RLS. This lets us
+-- (a) check "am I an admin?" without a recursive policy on app_members, and
+-- (b) check "is this email invited?" before the user is even authenticated.
+create or replace function public.is_admin()
+returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.app_members
+    where lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+      and role = 'admin'
+      and status <> 'disabled'
+  );
+$$;
+
+create or replace function public.is_email_allowed(p_email text)
+returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.app_members
+    where lower(email) = lower(coalesce(p_email, ''))
+      and status <> 'disabled'
+  );
+$$;
+
+-- A freshly signed-in user flips their own invite from 'invited' to 'active'.
+create or replace function public.mark_self_active()
+returns void
+language sql volatile security definer set search_path = public as $$
+  update public.app_members
+     set status = 'active'
+   where lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+     and status = 'invited';
+$$;
+
+grant execute on function public.is_email_allowed(text) to anon, authenticated;
+grant execute on function public.is_admin()              to authenticated;
+grant execute on function public.mark_self_active()      to authenticated;
+
+alter table public.app_members enable row level security;
+
+-- Admins read/manage everyone; a non-admin may read only their own row.
+drop policy if exists "members_read" on public.app_members;
+create policy "members_read" on public.app_members
+  for select
+  using (
+    public.is_admin()
+    or lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+  );
+
+drop policy if exists "members_admin_write" on public.app_members;
+create policy "members_admin_write" on public.app_members
+  for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- Bootstrap the founding admins so they can sign in and manage the team.
+insert into public.app_members (email, full_name, role, status) values
+  ('mohammedrayan@naazailabs.com', 'Mohammed Rayan', 'admin', 'active'),
+  ('admin@naazailabs.com',         'Administrator',  'admin', 'active')
+on conflict (email) do update set role = 'admin', status = 'active';
